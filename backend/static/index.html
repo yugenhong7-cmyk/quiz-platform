@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 智能题库 · 在线刷题平台</title>
+  <link rel="stylesheet" href="/static/css/app.css?v=20261124c" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>" />
+</head>
+<body>
+  <div id="app">
+    <!-- 登录页 -->
+    <div id="auth-view" class="auth-wrap hidden">
+      <div class="auth-card">
+        <div class="auth-hero">
+          <div class="auth-logo">📚</div>
+          <h1>AI 智能题库</h1>
+          <p>题库管理 · 智能导入 · 在线刷题 · AI 助教</p>
+        </div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">登录</button>
+          <button class="auth-tab" data-tab="register">注册</button>
+        </div>
+        <form id="login-form" class="auth-form">
+          <label>用户名<input id="login-username" autocomplete="username" required /></label>
+          <label>密码<input id="login-password" type="password" autocomplete="current-password" required /></label>
+          <button type="submit" class="btn btn-primary btn-block">登录</button>
+        </form>
+        <form id="register-form" class="auth-form hidden">
+          <label>用户名<input id="reg-username" required minlength="2" /></label>
+          <label>昵称<input id="reg-nickname" /></label>
+          <label>邮箱（可选）<input id="reg-email" type="email" /></label>
+          <label>密码<input id="reg-password" type="password" required minlength="6" /></label>
+          <button type="submit" class="btn btn-primary btn-block">注册并登录</button>
+        </form>
+        <p class="auth-note">首个注册用户自动成为管理员</p>
+      </div>
+    </div>
+
+    <!-- 主应用 -->
+    <div id="main-view" class="layout hidden">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-icon">📚</span>
+          <span class="brand-text">智能题库</span>
+        </div>
+        <nav class="nav" id="main-nav">
+          <a href="#/dashboard" class="nav-item" data-route="dashboard"><span class="nav-ico">🏠</span>工作台</a>
+          <a href="#/banks" class="nav-item" data-route="banks"><span class="nav-ico">🗃️</span>我的题库</a>
+          <a href="#/practice" class="nav-item" data-route="practice"><span class="nav-ico">✍️</span>开始刷题</a>
+          <a href="#/exam" class="nav-item" data-route="exam"><span class="nav-ico">📝</span>模拟考试</a>
+          <a href="#/wrong" class="nav-item" data-route="wrong"><span class="nav-ico">📕</span>错题本</a>
+          <a href="#/ai" class="nav-item" data-route="ai"><span class="nav-ico">🤖</span>AI 助教</a>
+          <a href="#/stats" class="nav-item" data-route="stats"><span class="nav-ico">📊</span>学习统计</a>
+          <a href="#/settings" class="nav-item" data-route="settings"><span class="nav-ico">⚙️</span>系统设置</a>
+        </nav>
+        <div class="sidebar-footer">
+          <button id="theme-toggle" class="btn btn-ghost btn-sm" title="切换主题">🌙 深色</button>
+          <div class="user-chip" id="user-chip">
+            <div class="avatar" id="user-avatar">U</div>
+            <div class="user-meta">
+              <div class="user-name" id="user-name">用户</div>
+              <div class="user-role" id="user-role">user</div>
+            </div>
+            <button id="logout-btn" class="btn btn-ghost btn-sm" title="退出">⎋</button>
+          </div>
+        </div>
+      </aside>
+      <div class="sidebar-mask" id="sidebar-mask"></div>
+      <main class="content">
+        <header class="topbar">
+          <button class="btn btn-ghost menu-toggle" id="menu-toggle">☰</button>
+          <h2 class="page-title" id="page-title">工作台</h2>
+          <div class="topbar-actions" id="topbar-actions"></div>
+        </header>
+        <div class="page" id="page-container">
+          <div class="loading-state"><div class="spinner"></div><p>加载中…</p></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- AI 聊天抽屉（刷题页内嵌） -->
+    <div class="drawer hidden" id="ai-drawer">
+      <div class="drawer-panel">
+        <div class="drawer-head">
+          <h3>🤖 AI 助教</h3>
+          <button class="btn btn-ghost btn-sm" id="close-drawer">✕</button>
+        </div>
+        <div class="drawer-body" id="drawer-messages"></div>
+        <div class="drawer-foot">
+          <div class="quick-prompts">
+            <button class="chip" data-q="为什么这个答案是正确的？">为什么正确？</button>
+            <button class="chip" data-q="请举一个例子说明">举个例子</button>
+            <button class="chip" data-q="用更简单的语言解释这道题">简单解释</button>
+            <button class="chip" data-q="这道题还有别的解法吗？">别的解法</button>
+          </div>
+          <form id="drawer-chat-form" class="chat-input-row">
+            <input id="drawer-chat-input" placeholder="向 AI 提问…" autocomplete="off" />
+            <button type="submit" class="btn btn-primary">发送</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- 桌宠：AI 学习小伙伴 -->
+    <div id="pet-widget" class="pet-widget hidden" aria-label="AI 学习桌宠">
+      <div id="pet-bubble" class="pet-bubble hidden"></div>
+      <div id="pet-panel" class="pet-panel hidden">
+        <div class="pet-panel-title">🦉 学习小伙伴</div>
+        <button class="pet-action" data-act="chat">💬 和 AI 对话</button>
+        <button class="pet-action" data-act="wrong">📕 错题复习</button>
+        <button class="pet-action" data-act="stats">📊 学习统计</button>
+        <button class="pet-action" data-act="tease">✨ 逗我一下</button>
+        <div class="pet-panel-tip">拖动我可以移动位置 · 答题时我会给你加油</div>
+      </div>
+      <div id="pet-avatar" class="pet-avatar" title="学习小伙伴（可拖动 · 点击互动）">
+        <img src="/static/img/pet.png?v=20261124" alt="AI 学习桌宠" draggable="false" />
+      </div>
+    </div>
+
+    <div class="toast-wrap" id="toast-wrap"></div>
+    <div class="modal hidden" id="modal">
+      <div class="modal-card" id="modal-card"></div>
+    </div>
+  </div>
+  <script src="/static/js/app.js?v=20261124d"></script>
+</body>
+</html>
